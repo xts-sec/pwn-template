@@ -11,9 +11,10 @@ def start(argv=[], *a, **kw):
 
 # Find offset to EIP/RIP for buffer overflows
 def find_ip(payload, architecture):
-    # Launch process and send payload
+    # Launch process 
     p = process(exe)
-    p.sendlineafter("ROP me outside, how 'about dah?", payload)
+    # Send payload after this line is received [CHANGE THIS]
+    p.sendlineafter("Whatever the program says", payload) 
     # Wait for the process to crash
     p.wait()
     # Print out the address of EIP/RIP at the time of crashing
@@ -23,7 +24,7 @@ def find_ip(payload, architecture):
         ip_offset = cyclic_find(p.corefile.read(p.corefile.sp, 4))  # x64
     else:
         print("Invalid architecture value supplied. Breaking.")
-        exit(1);
+        exit(1)
     info('located EIP/RIP offset at {a}'.format(a=ip_offset))
     return ip_offset
 
@@ -44,9 +45,9 @@ exe = './FileName'
 architecture = "x86"
 
 # This will automatically get context arch, bits, os etc
-elf = context.binary = ELF(exe, checksec=False)
+elf = context.binary = ELF(exe, checksec=True)
 
-# Change logging level to help with debugging (warning/info/debug)
+# Change logging level to help with debugging (warning < info < debug)
 context.log_level = 'debug'
 
 # ===========================================================
